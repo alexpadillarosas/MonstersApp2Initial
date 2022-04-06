@@ -25,7 +25,12 @@ public class MonsterViewHolder extends RecyclerView.ViewHolder {
         this.binding.monsterDescriptionTextView.setText(monster.getDescription());
         this.binding.monsterTotalVotesTextView.setText(monster.getVotes() + " Votes");
 
-        this.binding.monsterImageView.setImageResource(R.drawable.monster_7);
-
+//
+        if(monster.getImage().isEmpty()){
+            this.binding.monsterImageView.setImageResource(R.drawable.monster_7);
+        }else {
+            int resID = binding.getRoot().getResources().getIdentifier(monster.getImage(), "drawable", binding.getRoot().getContext().getPackageName());
+            this.binding.monsterImageView.setImageResource(resID);
+        }
     }
 }

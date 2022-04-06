@@ -8,12 +8,16 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.blueradix.android.monstersapp2initial.R;
 import com.blueradix.android.monstersapp2initial.databinding.ShowMonstersFragmentBinding;
 import com.blueradix.android.monstersapp2initial.monster.Monster;
 
@@ -41,7 +45,16 @@ public class ShowMonstersFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(ShowMonstersViewModel.class);
 
-        binding.monstersRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        Bundle bundle = getArguments();
+        if(bundle != null && bundle.containsKey("ADD_MONSTER")){
+            //coming back from add monster
+            Monster monster = (Monster) bundle.getSerializable("ADD_MONSTER");
+            mViewModel.insert(monster);
+        }
+
+
+        binding.monstersRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         binding.monstersRecyclerView.setHasFixedSize(true);
 
         MonsterRecyclerViewAdapter adapter = new MonsterRecyclerViewAdapter();
@@ -51,10 +64,18 @@ public class ShowMonstersFragment extends Fragment {
             @Override
             public void onChanged(List<Monster> monsters) {
                 //update RecyclerView
-                adapter.setMonsters(monsters);
+                adapter.submitList(monsters);
             }
         };
         mViewModel.getAllMonsters().observe(getViewLifecycleOwner(), allMonstersObserver);
+
+        binding.addMonsterFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavController navController = Navigation.findNavController(view);
+                navController.navigate(R.id.action_showMonstersFragment_to_addMonsterScrollingFragment);
+            }
+        });
 
     }
 }
